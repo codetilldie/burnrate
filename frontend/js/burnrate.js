@@ -137,15 +137,15 @@ function initEmployees(){
         var c_e_d = employees[burnrate.department[department]] = [];
         //vp br:2 + abi:3
         c_e_d.push(new Employee(burnrate.department[department],
-            burnrate.ability._3, burnrate.title.vp,burnrate.burn[1]));
+            burnrate.ability._3, burnrate.title.vp,burnrate.burn._2));
         //vp br:2 + abi:2
         c_e_d.push(new Employee(burnrate.department[department],
-            burnrate.ability._2, burnrate.title.vp,burnrate.burn[1]));
+            burnrate.ability._2, burnrate.title.vp,burnrate.burn._2));
         c_e_d.push(new Employee(burnrate.department[department],
-            burnrate.ability._2, burnrate.title.vp,burnrate.burn[1]));
+            burnrate.ability._2, burnrate.title.vp,burnrate.burn._2));
         //vp br:2 + abi:0
         c_e_d.push(new Employee(burnrate.department[department],
-            burnrate.ability._0, burnrate.title.vp,burnrate.burn[1]));
+            burnrate.ability._0, burnrate.title.vp,burnrate.burn._2));
         _.times(10,function(){
             //manager br:random[1, 2] + abi:random[1, 2]
             c_e_d.push(new Employee(burnrate.department[department],
