@@ -6,6 +6,7 @@
  *
  */
 
+
 var burnrate = window.burnrate = {
     type_card:    { employee: 'employee', skill:'skill'},
     title:        { Engineer: 'Engineer', Manager:'Manager', vp: 'Vice President',
@@ -27,15 +28,18 @@ var burnrate = window.burnrate = {
     }
 };
 
+/**
+ * support zh_cn
+ */
 (function lang_zh(burnrate){
     _.extend(burnrate, {
         title_ZH_CN:        { Engineer: '工程师', Manager:'经理', vp: '副总裁', Contractor: '外包工程师'},
         department_ZH_CN:   { hr: '人力资源部', sales:'市场部', development: '研发部',finance: '融资部'},
         getTitle_ZH_CN: function (title){
-            return burnrate.title_ZH_CN[title] || '';
+            return burnrate.title_ZH_CN[getKey(burnrate.title, title)] || '';
         },
         getDepartment_ZH_CN: function (department){
-            return burnrate.department_ZH_CN[title] || '';
+            return burnrate.department_ZH_CN[getKey(burnrate.department, department)] || '';
         }
     })
 })(burnrate);
@@ -129,23 +133,22 @@ function SC_BadIdea(ability, level_bad){
 function initEmployees(){
     var employees = burnrate.employees = {};
     //(vp + manager) in every department
-    for(var i in burnrate.department){
-        var c_e_d = employees[burnrate.department[i]] = [];
-        console.log(burnrate.department[i])
+    for(var department in burnrate.department){
+        var c_e_d = employees[burnrate.department[department]] = [];
         //vp br:2 + abi:3
-        c_e_d.push(new Employee(burnrate.department[i],
+        c_e_d.push(new Employee(burnrate.department[department],
             burnrate.ability._3, burnrate.title.vp,burnrate.burn[1]));
         //vp br:2 + abi:2
-        c_e_d.push(new Employee(burnrate.department[i],
+        c_e_d.push(new Employee(burnrate.department[department],
             burnrate.ability._2, burnrate.title.vp,burnrate.burn[1]));
-        c_e_d.push(new Employee(burnrate.department[i],
+        c_e_d.push(new Employee(burnrate.department[department],
             burnrate.ability._2, burnrate.title.vp,burnrate.burn[1]));
         //vp br:2 + abi:0
-        c_e_d.push(new Employee(burnrate.department[i],
+        c_e_d.push(new Employee(burnrate.department[department],
             burnrate.ability._0, burnrate.title.vp,burnrate.burn[1]));
         _.times(10,function(){
             //manager br:random[1, 2] + abi:random[1, 2]
-            c_e_d.push(new Employee(burnrate.department[i],
+            c_e_d.push(new Employee(burnrate.department[department],
                 burnrate.ability[_.random(1,2)], burnrate.title.Manager,
                 _.values(burnrate.burn)[_.random(0,1)]));
         });
@@ -153,7 +156,7 @@ function initEmployees(){
 
     //Engineer * 15, br:1 + abi:''
     _.times(15,function(){
-        employees[burnrate.department.development].push(new Employee(burnrate.department[i],
+        employees[burnrate.department.development].push(new Employee(burnrate.department[department],
             '', burnrate.title.Engineer, burnrate.burn._1));
     });
 
@@ -191,15 +194,20 @@ function Skill(name,  department, ability, affect){
 $(function(){
     burnrate.init();
     var $card_border = $(".card-border").remove();
-    var colors = ['color-hr', 'color-sales', 'color-develop', 'color-finance', 'color-contractor'];
+    var colors = {};
+    colors[burnrate.department.development] = 'color-develop';
+    colors[burnrate.department.hr] = 'color-hr';
+    colors[burnrate.department.finance] = 'color-finance';
+    colors[burnrate.department.sales] = 'color-sales';
+    colors['contractor'] = 'color-contractor';
     var names = ['Bill Gates', 'Hans Weich', 'Brad Duke'];
     var employees = burnrate.employees;
     _.each(employees, function(employees_dep, department){
         var department_ZH_CN = burnrate.getDepartment_ZH_CN(department);
-        var color = colors[_.indexOf(burnrate.department, department)];
-        var title_vp = burnrate.title[2];
-        var title_engineer = burnrate.title[0];
-        var title_outsource = burnrate.title[3];
+        var color = colors[department];
+        var title_vp = burnrate.title.vp;
+        var title_engineer = burnrate.title.Engineer;
+        var title_outsource = burnrate.title.Contractor;
         _.each(employees_dep,function(employee){
             var ability = employee.ability;
             var title = employee.title;
@@ -223,7 +231,7 @@ $(function(){
                 $employeeCard.find(".circle").hide();
             }else if(title == title_outsource){
                 $employeeCard.find(".circle").hide();
-                $employeeCard.find(".card").removeClass(color).addClass(colors[4]);
+                $employeeCard.find(".card").removeClass(color).addClass(colors['contractor']);
             }
             $(document.body).append($employeeCard);
         });
@@ -235,8 +243,3 @@ $(function(){
     );
 });
 
-function log(){
-    if(console && console.log){
-        console.log(arguments);
-    }
-}
