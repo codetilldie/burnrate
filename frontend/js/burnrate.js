@@ -11,14 +11,15 @@ var burnrate = window.burnrate = {
     type_card:    { employee: 'employee', skill:'skill'},
     title:        { Engineer: 'Engineer', Manager:'Manager', vp: 'Vice President',
                     Contractor: 'Contractor'},
-    type_skill:   { department: 'department', title: 'title'},
+    skill_type:   { department: 'department', title: 'title'},
     department:   { hr: 'human resource', sales:'sales', development: 'development',
                     finance: 'finance'},
+    target_type:  {'self':'self', 'other one':'other one'},
     ability:      { _0: 0, _1: 1,_2: 2, _3: 3},
     burn:         { _1: 1, _2: 2, _3 : 3},
     project_level:{ _1: 1, _2: 2, _3 : 3, _4 : 4},
     money_funding:{ _5: 5, _10: 10, _15: 15, _20: 20},
-    num_vp:       { _2: 2, m_3: 3},
+    vp_num:       { _0: 0, _2: 2, _3: 3},
 
     game: {},
     init: function(){
@@ -53,6 +54,10 @@ function Game(){
     }
 }
 
+function Project(project_level){
+    this.project_level = project_level;
+}
+
 function Player(id, name, money){
     this.id = id;
     this.name = name;
@@ -61,14 +66,15 @@ function Player(id, name, money){
     this.employees = [];
     this.firing = false;//firing doubles cost
 
+    //Todo: should not count every time, change to add/min it when employee/fire
     this.getDepartmentAbility = function (department){
         //default ability = zero;
-        var ability = burnrate.ability[0];
+        var ability = burnrate.ability._0;
         _.each(this.employees, function(){
             var employee = this;
             if(employee.department == department){
                 //vp's ability = department's ability,ignore managers
-                if(employee.title == burnrate.title[2]){
+                if(employee.title == burnrate.title.vp){
                     ability = employee.ability;
                 }else{
                     ability = _.max(employee.ability, ability);
@@ -77,6 +83,19 @@ function Player(id, name, money){
             }
         });
         return ability;
+    }
+
+    this.getVPNum = function(){
+        var vp_num = 0;
+        _.each(this.employees, function(){
+            var employee = this;
+            if(employee.department == department){
+                if(employee.title == burnrate.title.vp){
+                    vp_num++;
+                }
+            }
+        });
+        return vp_num;
     }
 
     this.employ = function(anEmployee){
@@ -94,7 +113,10 @@ function Player(id, name, money){
     this.release = function(project){
         this.projects = _.without(this.projects, project);
     }
+}
 
+function initPlayers(){
+    log('initPlayers');
 }
 
 function Employee(department, ability, title, burn){
@@ -110,24 +132,6 @@ function Employee(department, ability, title, burn){
         string.push('burn' + ':' + this.burn);
         return '[An Employee:{' + string + '}]';
     }
-}
-
-function SkillCard(name, description, type_skill, department, ability, skill){
-    this.name = name;
-    this.description = description;
-    this.type_kill = type_skill;
-    this.department = department;
-    this.ability = ability;
-    this.skill = skill;
-}
-
-function Project(project_level){
-    this.project_level = project_level;
-}
-
-function SC_BadIdea(ability, level_bad){
-    var card = new SkillCard('BAD IDEA', 'Bulter-Hosted \nSearch Portal');
-
 }
 
 function initEmployees(){
@@ -167,22 +171,41 @@ function initEmployees(){
     });
 }
 
-function initPlayers(){
-    log('initPlayers');
-}
-
-function initSkills(){
-    log('initSkills');
-}
-
-function Skill(name,  department, ability, affect){
+function Skill(name,  department, ability, vp_num, skill_type, target_type, affect, note){
     this.name = name;
     this.department = department;
     this.ability = ability;
+    this.vp_num = vp_num;
     this.affect = affect;
+    this.note = note;
+    this.skill_type = skill_type;
+    this.target_type = target_type;
     this.doAffect = function(){
         affect(arguments);
     }
+    //Todo:should change to a vari [condition]
+    this.canAffect = function(self, target){
+        target = (this.target_type == burnrate.target_type.self) ? self : target;
+        if(target_type == burnrate.skill_type.department){
+            return target.getDepartmentAbility(department) >= this.ability;
+        }else{
+            return target.getVpNum() >= this.vp_num;
+        }
+    }
+}
+
+function initSkills(){
+    burnrate['affects'] = {
+        'bad_idea': function(target){
+            target.badIdea(burnrate.project_level.level_2);
+        },
+        'release': function(target){
+            target.badIdea(burnrate.project_level.level_2);
+        }
+    }
+    var skill = new Skill('Bad Idea', burnrate.department.sales, burnrate.ability._2,
+        burnrate.vp_num._0, burnrate.skill_type.department, burnrate.target_type.other_one,
+        burnrate.affect.bad_idea,'');
 }
 
 //hr：网罗，雇错人，雇佣，解雇
@@ -200,7 +223,7 @@ $(function(){
     colors[burnrate.department.finance] = 'color-finance';
     colors[burnrate.department.sales] = 'color-sales';
     colors['contractor'] = 'color-contractor';
-    var names = ['Bill Gates', 'Hans Weich', 'Brad Duke'];
+    var names = ['Bill Gates', 'Hans Weich', 'Brad Duke'];//Todo : more names
     var employees = burnrate.employees;
     _.each(employees, function(employees_dep, department){
         var department_ZH_CN = burnrate.getDepartment_ZH_CN(department);
@@ -236,10 +259,5 @@ $(function(){
             $(document.body).append($employeeCard);
         });
     });
-    var skill = new Skill('Bad Idea', null, burnrate.department[0], burnrate.ability[2],
-        function(targetPlayer){
-            targetPlayer.badIdea(burnrate.project_level.level_2);
-        }
-    );
 });
 
