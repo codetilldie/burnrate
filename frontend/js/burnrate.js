@@ -137,6 +137,8 @@ function Employee(department, ability, title, burn){
 function initEmployees(){
     var employees = burnrate.employees = {};
     //(vp + manager) in every department
+    var abilities = [burnrate.ability._1, burnrate.ability._1, burnrate.ability._2];
+    var burns = [burnrate.burn._1, burnrate.burn._1, burnrate.burn._2];
     for(var department in burnrate.department){
         var c_e_d = employees[burnrate.department[department]] = [];
         //vp br:2 + abi:3
@@ -153,8 +155,8 @@ function initEmployees(){
         _.times(10,function(){
             //manager br:random[1, 2] + abi:random[1, 2]
             c_e_d.push(new Employee(burnrate.department[department],
-                burnrate.ability[_.random(1,2)], burnrate.title.Manager,
-                _.values(burnrate.burn)[_.random(0,1)]));
+                abilities[_.random(0,abilities.length)], burnrate.title.Manager,
+                burns[_.random(0,burns.length)]));
         });
     }
 
@@ -189,7 +191,7 @@ function Skill(name,  department, ability, vp_num, skill_type, target_type, affe
         if(target_type == burnrate.skill_type.department){
             return target.getDepartmentAbility(department) >= this.ability;
         }else{
-            return target.getVpNum() >= this.vp_num;
+            return target.getVPNum() >= this.vp_num;
         }
     }
 }
@@ -205,7 +207,7 @@ function initSkills(){
     }
     var skill = new Skill('Bad Idea', burnrate.department.sales, burnrate.ability._2,
         burnrate.vp_num._0, burnrate.skill_type.department, burnrate.target_type.other_one,
-        burnrate.affect.bad_idea,'');
+        burnrate.affects.bad_idea,'');
 }
 
 //hr：网罗，雇错人，雇佣，解雇
