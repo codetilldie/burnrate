@@ -54,7 +54,8 @@ function Game(){
     }
 }
 
-function Project(project_level){
+function Project(proejctId, project_level){
+    this.proejctId = proejctId;
     this.project_level = project_level;
 }
 
@@ -116,7 +117,6 @@ function Player(id, name, money){
 }
 
 function initPlayers(){
-    log('initPlayers');
 }
 
 function Employee(department, ability, title, burn){
@@ -182,9 +182,6 @@ function Skill(name,  department, ability, vp_num, skill_type, target_type, affe
     this.note = note;
     this.skill_type = skill_type;
     this.target_type = target_type;
-    this.doAffect = function(){
-        affect(arguments);
-    }
     //Todo:should change to a vari [condition]
     this.canAffect = function(self, target){
         target = (this.target_type == burnrate.target_type.self) ? self : target;
@@ -197,18 +194,43 @@ function Skill(name,  department, ability, vp_num, skill_type, target_type, affe
 }
 
 function initSkills(){
-    burnrate['affects'] = {
-        'bad_idea': function(target){
-            target.badIdea(burnrate.project_level.level_2);
-        },
-        'release': function(target){
-            target.badIdea(burnrate.project_level.level_2);
-        }
-    }
-    var skill = new Skill('Bad Idea', burnrate.department.sales, burnrate.ability._2,
-        burnrate.vp_num._0, burnrate.skill_type.department, burnrate.target_type.other_one,
-        burnrate.affects.bad_idea,'');
+    var skills = [];
+    var bad_idea = new BadIdea(burnrate.ability._2, burnrate.project_level._3);
 }
+
+function test(){
+    var bad_idea = new BadIdea(burnrate.ability._2, burnrate.project_level._3);
+    var player1 = new Player('player 1', 'me', 100);
+    var player2 = new Player('player 2', 'u', 100);
+    bad_idea.affect(player2)
+    var release = new Release(burnrate.ability._2);
+    log(a = new Release(2))
+    log(release.canAffect(player2, player2));
+    release.affect(player2, player2.projects[0]);
+    log(player2);
+}
+
+function BadIdea(ability, level){
+    burnrate.projectId = 100;
+    var affect = function(target){
+        var project = new Project(burnrate.projectId++, level);
+        target.badIdea(project);
+    };
+    BadIdea.prototype = new Skill('Bad Idea', burnrate.department.sales, ability,
+        burnrate.vp_num._0, burnrate.skill_type.department, burnrate.target_type.other_one,
+        affect,'');
+}
+
+
+function Release(ability){
+    var affect = function(target, project){
+        target.release(project);
+    };
+    Release.prototype = new Skill('Release', burnrate.department.development, ability,
+        burnrate.vp_num._0, burnrate.skill_type.department, burnrate.target_type.self,
+        affect,'');
+}
+
 
 //hr：网罗，雇错人，雇佣，解雇
 //develop：终止
