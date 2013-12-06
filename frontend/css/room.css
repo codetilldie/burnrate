@@ -1,0 +1,22 @@
+.container{
+    height: 240px;
+    width: 380px;
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    margin:auto;
+}
+
+.margin-small{
+    margin: 10px;
+}
+
+.button-group{
+    text-align: center;
+}
+
+.msg{
+    padding: 0px 10px 0px 10px;
+}
