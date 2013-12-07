@@ -7,7 +7,6 @@
  */
 
 $(function(){
-    
     $(".msg").add($("#container-login")).hide();
     $(".btn-success").on('click', function(){
         $(".msg").slideDown('slow');
@@ -17,6 +16,7 @@ $(function(){
     });
 
     var containers = [$("#container-create"), $("#container-login")];
+	var duration = 200;
     $(".btn-default").on('click', function(){
         container = containers.shift();
         containers.push(container);
@@ -24,7 +24,7 @@ $(function(){
         container.transition({
             perspective: '1000px',
             rotateY: '90deg',
-            duration: 200
+            duration: duration
         });
         window.setTimeout(function(){
             container.hide();
@@ -38,13 +38,13 @@ $(function(){
             }).transition({
                 perspective: '1000px',
                 rotateY: '360deg',
-                duration: 200
+                duration: duration
             }).transition({
                 perspective: '1000px',
                 rotateY: '0deg',
                 duration: 1
             });
 
-        },200)
+        },duration)
     });
 });
