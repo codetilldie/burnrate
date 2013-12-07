@@ -21,4 +21,5 @@ function getKey(object, value){
     return null;
 }
 
+//exports
 exports.getKey = getKey;
