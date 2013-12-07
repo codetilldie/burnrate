@@ -7,11 +7,7 @@
  */
 
 $(function(){
-    $("#container-login").transition({
-        perspective: '1000px',
-        rotateY: '180deg',
-        duration: 1
-    });
+    
     $(".msg").add($("#container-login")).hide();
     $(".btn-success").on('click', function(){
         $(".msg").slideDown('slow');
@@ -27,8 +23,8 @@ $(function(){
         container.show();
         container.transition({
             perspective: '1000px',
-            rotateY: '180deg',
-            duration: 500
+            rotateY: '90deg',
+            duration: 200
         });
         window.setTimeout(function(){
             container.hide();
@@ -37,14 +33,18 @@ $(function(){
             container.show();
             container.transition({
                 perspective: '1000px',
+                rotateY: '270deg',
+                duration: 1
+            }).transition({
+                perspective: '1000px',
                 rotateY: '360deg',
-                duration: 500
+                duration: 200
             }).transition({
                 perspective: '1000px',
                 rotateY: '0deg',
                 duration: 1
             });
 
-        },500)
+        },200)
     });
 });
